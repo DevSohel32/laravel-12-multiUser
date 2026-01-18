@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('photo')->nullable();
             $table->string('password');
             $table->string('token');
+            $table->timestamps();
 
         });
     }
