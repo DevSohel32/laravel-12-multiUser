@@ -1,52 +1,222 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel 12 Multi-User Application
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A comprehensive multi-user application built with Laravel 12, featuring separate Admin and User authentication systems, role-based access control, and modern database architecture.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Multi-User Support**: Separate user and admin authentication systems
+- **Role-Based Access Control**: Admin roles include super_admin, admin, moderator, and support
+- **Admin Dashboard**: Comprehensive admin panel with user management capabilities
+- **Secure Authentication**: Password hashing with Laravel's built-in security
+- **Database Migrations**: Well-structured database schema with comprehensive fields
+- **User Permissions**: Granular permission system for fine-grained access control
+- **Activity Tracking**: Track admin login attempts and last login timestamps
+- **Soft Deletes**: Non-destructive deletion of records
+- **Modern UI**: Bootstrap-based responsive design
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Project Structure
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```
+├── app/
+│   ├── Models/
+│   │   ├── Admin.php           # Admin model with permissions
+│   │   └── User.php            # User model
+│   └── Http/
+│       └── Controllers/
+├── database/
+│   ├── migrations/
+│   │   ├── 0001_01_01_000000_create_users_table.php
+│   │   └── 2026_01_18_000000_create_admins_table.php
+│   └── seeders/
+│       ├── AdminSeeder.php     # Seed admin users
+│       └── DatabaseSeeder.php
+├── resources/
+│   └── views/
+├── routes/
+│   └── web.php                # Application routes
+└── config/
+    └── auth.php               # Authentication configuration
+```
 
-## Learning Laravel
+## Installation
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+1. **Clone the repository**
+```bash
+git clone https://github.com/DevSohel32/laravel-12-multiUser.git
+cd laravel-12-multiUser
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+2. **Install dependencies**
+```bash
+composer install
+npm install
+```
 
-## Laravel Sponsors
+3. **Configure environment**
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+4. **Configure database**
+Update `.env` with your database credentials:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=multiuser
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-### Premium Partners
+5. **Run migrations and seeders**
+```bash
+php artisan migrate
+php artisan db:seed
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Database Schema
+
+### Users Table
+- id, name, email, password
+- phone, address, city, state, country, zip
+- photo, token, status
+- timestamps
+
+### Admins Table
+- id, name, email, password
+- phone, photo, role, status
+- permissions (JSON), email_verified_at
+- last_login_at, login_attempts
+- notes, token
+- timestamps with soft deletes
+
+## Default Admin Credentials
+
+After running the seeder, use these credentials to login:
+
+- **Email**: `admin@gmail.com`
+- **Password**: `12345`
+- **Role**: Super Admin
+
+## API Routes
+
+### Admin Routes
+- `GET /admin/login` - Show login form
+- `POST /admin/login` - Process login
+- `GET /admin/dashboard` - Admin dashboard (protected)
+- `POST /admin/logout` - Logout
+
+## Models
+
+### Admin Model
+```php
+// Check if admin has specific role
+$admin->hasRole('super_admin');
+
+// Check if admin has specific permission
+$admin->hasPermission('manage_users');
+
+// Get active admins
+Admin::active()->get();
+
+// Get admins by role
+Admin::byRole('moderator')->get();
+```
+
+### User Model
+Fillable fields include all user table columns for mass assignment.
+
+## Configuration
+
+### Authentication Guards
+The application uses custom authentication guards for separate admin and user authentication configured in `config/auth.php`.
+
+### Permissions
+Permissions are stored as JSON arrays in the admins table:
+```php
+'permissions' => ['read', 'write', 'delete', 'manage_users', 'manage_admins']
+```
+
+## Development
+
+### Available Commands
+```bash
+# Run migrations
+php artisan migrate
+
+# Refresh migrations with seeders
+php artisan migrate:refresh --seed
+
+# Create admin seeder
+php artisan make:seeder AdminSeeder
+
+# Run tests
+php artisan test
+```
+
+### Build Assets
+```bash
+npm run dev      # Development
+npm run build    # Production
+```
+
+## Technologies Used
+
+- **Framework**: Laravel 12
+- **Database**: MySQL
+- **Frontend**: Bootstrap 5, Blade Templates
+- **Authentication**: Laravel Built-in Authentication
+- **ORM**: Eloquent
+
+## Future Enhancements
+
+- [ ] User registration and email verification
+- [ ] Two-factor authentication
+- [ ] API token-based authentication
+- [ ] Advanced admin dashboard with analytics
+- [ ] User role-based system
+- [ ] Activity logging system
+- [ ] Email notifications
+
+## Security
+
+- All passwords are hashed using bcrypt
+- CSRF protection enabled on all forms
+- SQL injection protection via Eloquent ORM
+- XSS protection through Blade templating
+- Mass assignment protection with $fillable
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## Code of Conduct
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Author
+
+**Dev Sohel**
+- GitHub: [@DevSohel32](https://github.com/DevSohel32)
+
+## Support
+
+For support, email contact@example.com or open an issue on GitHub.
+
+## Changelog
+
+### Version 1.0.0 (January 18, 2026)
+- Initial release
+- Admin and User models
+- Multi-user authentication system
+- Role-based access control
+- Database migrations and seeders
+
 
 In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
