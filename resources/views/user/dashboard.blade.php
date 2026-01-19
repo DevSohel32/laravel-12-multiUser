@@ -1,2 +1,2 @@
-<h1>Welcome to User Dashboard</h1>
-<a href="{{ route('logout') }}">Logout</a>
+@include('user.top')
+<h1>User Dashboard</h1>
