@@ -1,4 +1,5 @@
 
+
 <body>
     <div class="container mx-auto p-4">
         <div class="max-w-md mx-auto mt-10">
@@ -28,7 +29,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('admin_forgot_password_submit') }}" class="bg-white p-6 rounded border border-gray-300">
+            <form method="POST" action="{{ route('forgot_password_submit') }}" class="bg-white p-6 rounded border border-gray-300">
                 @csrf
 
                 <div class="mb-4">
@@ -44,7 +45,7 @@
                 </button>
 
                 <div class="mt-4">
-                    <a href="{{ route('admin_login') }}" class="text-blue-500 hover:text-blue-700 text-sm">Back to Login</a>
+                    <a href="{{ route('login') }}" class="text-blue-500 hover:text-blue-700 text-sm">Back to Login</a>
                 </div>
             </form>
         </div>
